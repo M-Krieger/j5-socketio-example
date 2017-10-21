@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Johnny-Five / SocketIO error example</title>
+		<style media="screen">
+			label {
+				display: block;
+			}
+
+			label span {
+				display: block;
+			}
+		</style>
+	</head>
+	<body>
+		<h4>Johnny-Five / SocketIO error example</h4>
+
+		<label for="left">
+			Left: <span id="leftVal">0</span>
+			<input id="left" type="range" name="left" value="0" min="-1" max="1" step="0.05">
+		</label>
+		<label for="right">
+			Right: <span id="rightVal">0</span>
+			<input id="right" type="range" name="right" value="0" min="-1" max="1" step="0.05">
+		</label>
+		<label for="wheels">
+			Wheels: <span id="wheelsVal">0</span>
+			<input id="wheels" type="range" name="wheels" value="0" min="-1" max="1" step="0.05">
+		</label>
+		<label for="stop">
+			Stop Wheels
+			<button id="stop" type="button" name="stop">stop</button>
+		</label>
+
+		<label for="sweep">
+			Sweep Wheels
+			<button id="sweep" type="button" name="sweep">sweep</button>
+		</label>
+
+		<script src="/socket.io/socket.io.js"></script>
+		<script>
+			(function() {
+				var socket = io.connect(window.location.hostname + ':' + 3001);
+
+				var left = document.querySelector('#left');
+				var leftVal = document.querySelector('#leftVal');
+				var right = document.querySelector('#right');
+				var rightVal = document.querySelector('#rightVal');
+				var wheels = document.querySelector('#wheels');
+				var wheelsVal = document.querySelector('#wheelsVal');
+				var sweep = document.querySelector('#sweep');
+				var stop = document.querySelector('#stop');
+
+				left.addEventListener('input', (e) => {
+					console.log(e.target.value);
+					socket.emit('left', e.target.value);
+					leftVal.innerHTML = e.target.value;
+				})
+
+				right.addEventListener('input', (e) => {
+					console.log(e.target.value);
+					socket.emit('right', e.target.value);
+					rightVal.innerHTML = e.target.value;
+				})
+
+				wheels.addEventListener('input', (e) => {
+					console.log(e.target.value);
+
+					socket.emit('wheels', e.target.value);
+					leftVal.innerHTML = 0;
+					left.value = 0;
+					rightVal.innerHTML = 0;
+					right.value = 0;
+					wheelsVal.innerHTML = e.target.value;
+				})
+
+				stop.addEventListener('click', () => {
+					console.log('stop');
+					socket.emit('stop', true);
+					leftVal.innerHTML = 0;
+					left.value = 0;
+					rightVal.innerHTML = 0;
+					right.value = 0;
+					wheelsVal.innerHTML = 0;
+					wheels.value = 0;
+				})
+
+				sweep.addEventListener('click', () => {
+					console.log('sweep');
+					socket.emit('sweep', true);
+					leftVal.innerHTML = 0;
+					left.value = 0;
+					rightVal.innerHTML = 0;
+					right.value = 0;
+					wheelsVal.innerHTML = 0;
+					wheels.value = 0;
+				})
+
+				socket.on('connect', function(data) {
+					console.log('connected');
+					socket.emit('join', 'Client is connected!');
+				});
+			}());
+		</script>
+	</body>
+</html>
